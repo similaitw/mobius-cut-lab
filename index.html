@@ -87,13 +87,23 @@ td button.knot{border-color:var(--red)}
 @media(max-width:700px){.lit thead{display:none}.lit tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.lit td{border:0;padding:3px 0}.lit td::before{content:attr(data-l);display:block;font-size:12px;color:var(--mute);font-weight:700}}
 @media(max-width:860px){.lab{grid-template-columns:minmax(0,1fr)}.fig{height:56vh;min-height:360px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+
+.topnav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:8px max(5vw,16px)}
+.topnav .nav{max-width:1240px;margin:0 auto;padding:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.topnav .nav::-webkit-scrollbar{display:none}
+.topnav .nav a.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+html{scroll-padding-top:70px;scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{.topnav{display:none}}
 </style>
 </head>
 <body>
 <section class="band"><div class="wrap">
 <h1>扭轉紙環剪開實驗室</h1>
 <p class="lead">紙條先扭 n 個半圈、再黏成環，接著畫上等分線把寬度分成 k 等分（k = 1 就是不剪），再沿線剪開。剪完後每個獨立的環會塗上不同顏色；拉動「拉開檢視」可以把環往外拉：沒套住的環能完全分開，套住的環會像鍊子一樣被拉到繃緊，解不開時就停下來。點下方的色塊，則能只看單一個環。</p>
-<nav class="nav scroll"><a href="#lab">實驗室</a><a href="#matrix">全覽表</a><a href="#laws">規律</a><a href="#prior">已有研究</a><a href="#next">可再研究方向</a><a href="guide.html">方向一手冊：環繞數</a></nav>
+</div></section>
+<div class="topnav"><nav class="nav" aria-label="本頁段落"><a href="#lab">實驗室</a><a href="#matrix">全覽表</a><a href="#laws">規律</a><a href="#prior">已有研究</a><a href="#next">可再研究方向</a><a href="guide.html">方向一手冊：環繞數</a></nav></div>
+<section class="band" style="padding-top:20px"><div class="wrap">
 <div class="lab" id="lab">
   <div class="fig" id="fig"><span class="hint">拖曳旋轉・雙指縮放</span></div>
   <div class="panel">
@@ -392,6 +402,13 @@ $('strat').innerHTML=STRAT.map((s,i)=>`<details${i===0?' open':''}><summary>${s.
 function loop(){if(SIM&&SIM.act&&st.ex>0&&st.p>=1){const t0=performance.now();do simStep();while(SIM.act&&performance.now()-t0<14);clear();simDraw()}ctr.update();ren.render(scene,cam);raf=requestAnimationFrame(loop)}
 resize();sync();rebuild();loop();
 }
+</script>
+<script>
+{const links=[...document.querySelectorAll('.topnav a[href^="#"]')],nav=document.querySelector('.topnav .nav');
+ const secs=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+ const set=id=>{links.forEach(a=>{const on=a.getAttribute('href')==='#'+id;a.classList.toggle('on',on);if(on){a.setAttribute('aria-current','true');const l=a.offsetLeft-nav.clientWidth/2+a.clientWidth/2;nav.scrollTo({left:l,behavior:'smooth'})}else a.removeAttribute('aria-current')})};
+ const pick=()=>{let cur=secs[0];for(const s of secs){if(s.getBoundingClientRect().top<=90)cur=s}if(cur)set(cur.id)};
+ addEventListener('scroll',pick,{passive:true});addEventListener('resize',pick);pick()}
 </script>
 </body>
 </html>
