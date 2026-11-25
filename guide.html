@@ -58,7 +58,7 @@ ol.steps li{margin-bottom:8px}
 <a class="back" href="./">← 回到扭轉紙環剪開實驗室</a>
 <h1>方向一：用環繞數重新定義「扭轉數」</h1>
 <p class="lead">紙環打結以後，把它壓平來數「扭了幾個半圈」，會因為擺法不同而數出不同答案。這份手冊把整個量測流程拆成六個定義和一個定理，每一步都附圖。每張圖的交叉點和數字都是程式依照圖形實際算出來的，可以直接拿來當實驗的對照。</p>
-<nav class="nav"><a href="#s1">1 紙帶與方向</a><a href="#s2">2 交叉點</a><a href="#s3">3 正負號</a><a href="#s4">4 環繞數 Lk</a><a href="#s5">5 翻面 Tw</a><a href="#s6">6 自跨 Wr</a><a href="#thm">定理</a><a href="#check">兩種擺法</a><a href="#exp">實驗步驟</a><a href="#pred">預測表</a></nav>
+<nav class="nav"><a href="#s1">1 紙帶與方向</a><a href="#s2">2 交叉點</a><a href="#s3">3 正負號</a><a href="#s4">4 環繞數 Lk</a><a href="#s5">5 翻面 Tw</a><a href="#s6">6 自跨 Wr</a><a href="#thm">定理</a><a href="#check">兩種擺法</a><a href="#ext">延伸：最少翻面</a><a href="#exp">實驗步驟</a><a href="#pred">預測表</a></nav>
 </div></section>
 
 <section class="band" style="padding-top:0"><div class="wrap">
@@ -121,15 +121,49 @@ ol.steps li{margin-bottom:8px}
 </div><div class="fig"><svg id="f7" viewBox="0 0 400 300" role="img" aria-label="定理示意：交叉點分成翻面和自跨兩類"></svg><p class="cap">圖 7　紅藍交叉點分兩類：翻面處各 1 個，自跨處各 2 個。</p></div></div>
 
 <div class="step" id="check" style="grid-template-columns:minmax(0,1fr)"><div>
-<span class="num">驗證</span><h2>同一個環，兩種擺法</h2>
-<p>莫比烏斯帶（n = 1）沿中線剪開，得到一個長 2L、沒打結的環，3D 模型算出 |Lk| = 2。下面把它用兩種方式平放：</p>
+<span class="num">驗證</span><h2>同一個環，三種擺法</h2>
+<p>莫比烏斯帶（n = 1）沿中線剪開，得到一個長 2L、沒打結的環，3D 模型算出 |Lk| = 2。下面把它用三種方式平放：</p>
 </div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
 <div class="fig"><svg id="f8a" viewBox="0 0 400 300" role="img" aria-label="擺成圓形，翻面 4 次"></svg><div class="cnt" id="c8a"></div><p class="cap">擺法 A：擺成一個圓，翻面 4 次，沒有自跨。</p></div>
 <div class="fig"><svg id="f8b" viewBox="0 0 400 300" role="img" aria-label="擺成 8 字形，翻面 2 次，自跨 1 次"></svg><div class="cnt" id="c8b"></div><p class="cap">擺法 B：擺成 8 字形，翻面只剩 2 次，但多了 1 次自跨。</p></div>
+<div class="fig"><svg id="f8c" viewBox="0 0 400 300" role="img" aria-label="打兩個小圈，沒有翻面，自跨 2 次"></svg><div class="cnt" id="c8c"></div><p class="cap">擺法 C：打兩個小圈，完全不翻面，自跨 2 次。</p></div>
 </div>
-<p style="margin-top:14px">兩種擺法數到的半圈數（4 和 2）不同，但 Lk 都是 2，正好就是前人報告裡扭轉數不一致的情形。上面的卡片數字都是程式從圖形算出來的。</p>
+<p style="margin-top:14px">三種擺法數到的半圈數（4、2、0）都不同，但 Lk 都是 2，正好就是前人報告裡扭轉數不一致的情形。擺法 C 也說明：只要打圈，翻面可以完全不見。上面的卡片數字都是程式從圖形算出來的。</p>
 </div>
+
+<div class="step" id="ext" style="grid-template-columns:minmax(0,1fr)"><div>
+<span class="num">延伸問題</span><h2>平放時，最少要翻面幾次？</h2>
+<p>從擺法 C 可以看到：如果什麼擺法都可以，<b>翻面最少是 0 次</b>。原因是定理 Lk ＝ Tw ＋ Wr 裡，Lk 固定，翻面和自跨可以互相交換：</p>
+<div class="def"><b>交換規則</b>把紙帶繞成一個小圈（自跨一次），Wr 多 1；為了讓 Lk 不變，翻面就少 2 次。反過來也可以。</div>
+<p>所以「最少翻面幾次」要加條件才是好問題。下面是兩種加條件的方式，各自都能整理成可以證明、可以實驗的結論。</p>
+
+<h3 style="font-size:20px;margin-top:22px">改法 A：限定用最簡結圖擺</h3>
+<div class="def"><b>定義 7　最簡擺法</b>紙帶平放時，自跨的次數最少（等於這個結的交叉數）。沒打結的環最簡擺法是 0 次自跨，也就是擺成一個圈。</div>
+<div class="thm"><b class="t">結論 A</b>扭 n 個半圈沿中線剪開，用最簡擺法平放時：<br>
+・n 為奇數且 n ≥ 3：環打成 (2, n) 環面結，最簡結圖有 n 個同號自跨，Wr ＝ n，所以翻面 ＝ 2 ×（2n − n）＝ <b style="color:var(--ink)">2n 次</b>。<br>
+・n ＝ 1：環沒打結，擺成一個圈，翻面 ＝ 2 × 2 ＝ <b style="color:var(--ink)">4 次</b>。<br>
+・n 為偶數：每個環都沒打結，各擺成一個圈，翻面 ＝ 2 ×（n ÷ 2）＝ <b style="color:var(--ink)">n 次</b>。</div>
+<h3>為什麼答案是唯一的</h3>
+<p>(2, n) 環面結屬於「交錯結」。交錯結的最簡結圖不管怎麼畫，Wr 都一樣，這是 Tait 在 19 世紀末提出的猜想，1987 年由 Kauffman、Murasugi、Thistlethwaite 用 Jones 多項式證明。所以在最簡擺法下，翻面次數是確定的，不會因人而異。</p>
+<p>這給了一個可以驗證前人的方法：第 63 屆報告 n ＝ 3 剪開「扭轉 8 個半圈」，但最簡擺法應該是 6 次翻面。如果學生用最簡擺法實際數到 6 次，就能說明 8 是擺法不是最簡造成的。</p>
+
+<h3 style="font-size:20px;margin-top:22px">改法 B：翻面加自跨，總數最少</h3>
+<div class="def"><b>定義 8　擺法的成本</b>成本 ＝ 翻面次數 ＋ 自跨次數（都不管正負號，只數個數）。</div>
+<div class="thm"><b class="t">結論 B</b>對扭 n 個半圈剪開的每一個環，最小成本 ＝ |Lk|，而且達到最小成本的擺法一定完全不翻面、所有自跨都同號。</div>
+<h3>證明</h3>
+<ol>
+<li><b>下界</b>：設翻面 F 次、自跨 C 次。每次翻面對 Lk 最多貢獻 ½，每次自跨最多貢獻 1，所以 |Lk| ≤ F ÷ 2 ＋ C ≤ F ＋ C ＝ 成本。</li>
+<li><b>等號條件</b>：第二個「≤」要變成等號，必須 F ＝ 0；第一個要變成等號，所有自跨必須同號。</li>
+<li><b>做得到</b>：沒打結的環，打 |Lk| 個同號小圈即可（例如 n ＝ 1 打 2 個圈，就是擺法 C）。n 為奇數且 n ≥ 3 的環，先擺成最簡結圖（n 個同號自跨），再打 n 個同號小圈，總共 2n ＝ |Lk| 個自跨、0 次翻面。■</li>
+</ol>
+<p>「打圈」比「翻面」划算一倍：一次自跨換到的 Lk 是一次翻面的兩倍。這個結論目前沒在台灣科展看過，可以當作延伸成果。</p>
+
+<div class="scroll" style="margin-top:12px"><table>
+<thead><tr><th>n</th><th>每個環的 |Lk|</th><th class="l">改法 A：最簡擺法</th><th class="l">改法 B：最小成本擺法</th></tr></thead>
+<tbody id="etab"></tbody></table></div>
+<p class="foot">實驗建議：改法 A 驗證「翻面次數只跟結有關、跟人無關」；改法 B 讓學生比賽誰的擺法成本最低，再用證明說明為什麼沒有人能低於 |Lk|。</p>
+</div></div>
 
 <div class="step" id="exp" style="grid-template-columns:minmax(0,1fr)"><div>
 <span class="num">實驗</span><h2>實驗步驟與記錄表</h2>
@@ -307,15 +341,23 @@ function strand(svg,a,b,col,gap){const P=[a,b];
  label(s,200,284,'2Lk = 2Tw + 2Wr　⟹　Lk = Tw + Wr',ink,15,'middle')}
 
 /* 圖 8：同一個環的兩種擺法（n=1 剪開，|Lk|=2） */
-function layout(id,cid,c,flips,N=900){const s=document.getElementById(id);
-  const R=ribbon(c,{w:13,flips,N,closed:true,k:0.009});const tf=T(200,150);drawRibbons(s,[R],tf,{arrows:true});
+function layout(id,cid,c,flips,N=900,w=13){const s=document.getElementById(id);
+  const R=ribbon(c,{w,flips,N,closed:true,k:0.009});const tf=T(200,150);drawRibbons(s,[R],tf,{arrows:true});
   const X=crossings(R.red,R.blue);const W=crossings(R.cen,R.cen,true);mark(s,X,tf,false);
   const tw=flips.length,lk=sum(X)/2,wr=sum(W),fs=lk-wr;
   cards(cid,[['翻面次數',tw],['自跨總和 Wr',fmt(wr)],['紅藍總和 ÷ 2 = Lk',fmt(lk)]]);
   return {lk,wr}}
 const RA=layout('f8a','c8a',t=>[130*Math.cos(2*Math.PI*t),110*Math.sin(2*Math.PI*t)],[{t:.125,h:1},{t:.375,h:1},{t:.625,h:1},{t:.875,h:1}]);
+const RC=layout('f8c','c8c',t=>{const a=2*Math.PI*t;return [72*(Math.cos(a)+1.0*Math.cos(3*a)),-62*(Math.sin(a)+1.0*Math.sin(3*a))]},[],1600,9);
 const RB=layout('f8b','c8b',t=>{const a=2*Math.PI*(t+0.6);return [160*Math.sin(a),105*Math.sin(a)*Math.cos(a)]},[{t:.25,h:1},{t:.75,h:1}]);
 
+/* 延伸表 */
+{const rows=[];for(let n=0;n<=9;n++){let lk,a,b;
+  if(n%2===0){lk=n/2;a=n===0?'擺成圈，不翻面':`擺成圈，翻面 ${n} 次`;b=n===0?'成本 0':`打 ${n/2} 個同號小圈，成本 ${n/2}`}
+  else if(n===1){lk=2;a='擺成圈，翻面 4 次';b='打 2 個同號小圈，成本 2'}
+  else{lk=2*n;a=`(2,${n}) 結圖 ${n} 個自跨＋翻面 ${2*n} 次`;b=`結圖 ${n} 個自跨＋${n} 個小圈，成本 ${2*n}`}
+  rows.push(`<tr><td>${n}</td><td><b>${lk}</b></td><td class="l">${a}</td><td class="l">${b}</td></tr>`)}
+ document.getElementById('etab').innerHTML=rows.join('')}
 /* 預測表 */
 {const rows=[];for(let n=0;n<=9;n++){
   let r;if(n%2===0)r=[n,'2 個環，各長 L',n/2,n,'不打結（同左）',n/2];
