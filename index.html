@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>扭轉紙環剪開實驗室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 好奇、動手做的理科工作室，清楚不花俏
+   IDEA: 一張剪紙實驗學習單——白紙、鉛筆虛線、紅色剪刀線
+   PICTURE: 大型可旋轉 3D 紙環，剪刀沿虛線前進，剪完各環上不同顏色
+   COLOUR and TYPE: 白紙底、墨藍黑字、朱紅剪刀線；Noto Sans TC
+   LAYOUT: 3D 圖在上（桌機左），控制與結果在旁；下方為全覽矩陣、定理、前人研究 */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#14161f);--ink:light-dark(#1b1d2b,#eceef6);--mute:light-dark(#5d6275,#a3a8bb);--line:light-dark(#e3e4ea,#2c3040);--card:light-dark(#f6f6f9,#1c1f2b);--red:#ff4b2b;--blue:#2a6fdb}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+h1{font-size:clamp(28px,4.4vw,44px);line-height:1.1;margin:0 0 6px;font-weight:900;text-wrap:balance}
+h2{font-size:clamp(22px,3vw,30px);line-height:1.15;margin:0 0 14px;font-weight:900}
+.lead{color:var(--mute);margin:0 0 20px;max-width:70ch}
+.lab{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:24px;align-items:start}
+.fig{position:relative;min-height:440px;height:62vh;max-height:640px;border-radius:18px;background:radial-gradient(circle at 50% 40%,light-dark(#ffffff,#22263a),light-dark(#eef0f6,#10121a));border:1px solid var(--line);overflow:hidden}
+.fig canvas{position:absolute;inset:0;width:100%!important;height:100%!important;touch-action:none}
+.hint{position:absolute;left:14px;bottom:10px;font-size:13px;color:var(--mute);pointer-events:none}
+.panel{display:grid;gap:16px}
+.ctl{background:var(--card);border-radius:16px;padding:16px 18px;display:grid;gap:14px}
+.row label{display:flex;justify-content:space-between;font-weight:700}
+.row label b{color:var(--red);font-size:20px}
+input[type=range]{width:100%;height:44px;accent-color:var(--red)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-weight:700;min-height:44px;padding:0 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+button.on,button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.res{border:2px solid var(--ink);border-radius:16px;padding:16px 18px}
+.big{font-size:clamp(22px,2.6vw,28px);font-weight:900;line-height:1.25;margin:0 0 6px}
+.res p{margin:4px 0;color:var(--mute)}
+.comp{display:grid;gap:8px;margin-top:12px}
+.ci{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;align-items:start;font-size:15px}
+.sw{width:18px;height:18px;border-radius:5px;margin-top:3px}
+.tag{display:inline-block;font-size:13px;padding:0 8px;border-radius:99px;background:var(--red);color:#fff;margin-left:6px}
+.veil{text-align:center;padding:18px 0}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:center;font-size:14px}
+th{color:var(--mute);font-weight:700}
+td button{min-height:44px;width:100%;padding:4px 6px;font-weight:500;font-size:13px;line-height:1.35}
+td button.knot{border-color:var(--red)}
+.sp{display:inline-block;font-size:12px;font-weight:700;padding:0 6px;border-radius:99px;margin-top:3px}
+.sp.ok{background:light-dark(#d6f5e8,#123a2c);color:light-dark(#0b6b47,#7fe0b5)}
+.sp.no{background:light-dark(#ffe1db,#4a2019);color:light-dark(#b0260c,#ff9a85)}
+.sp.na{background:var(--card);color:var(--mute)}
+.scroll{overflow-x:auto}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--card);border-radius:16px;padding:16px 18px}
+.card h3{margin:0 0 6px;font-size:17px;line-height:1.35}
+.card p{margin:0;font-size:15px;color:var(--mute)}
+.card a{color:var(--blue);font-size:14px;overflow-wrap:anywhere}
+.law{font-size:17px}
+.law li{margin-bottom:8px}
+.cover{display:inline-block;font-size:13px;font-weight:700;padding:1px 9px;border-radius:99px;margin-bottom:6px}
+.c-hi{background:light-dark(#ffe1db,#4a2019);color:light-dark(#b0260c,#ff9a85)}
+.c-mid{background:light-dark(#fff1c2,#433a14);color:light-dark(#7a5b00,#ffd75e)}
+.c-lo{background:light-dark(#d9e8ff,#16294a);color:light-dark(#1a4fa8,#8fb8ff)}
+.foot{font-size:13px;color:var(--mute)}
+.nav{display:flex;gap:8px;margin:0 0 18px;padding-bottom:4px}
+.nav a{flex:none;color:var(--ink);text-decoration:none;font-weight:700;font-size:14px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--line)}
+.nav a:hover{border-color:var(--ink)}
+.ci{cursor:pointer;border-radius:10px;padding:4px;margin:-4px;border:0;background:none;color:inherit;text-align:left;font:inherit;width:100%;min-height:0;font-weight:400}
+.ci.dim{opacity:.4}.ci.sel{background:light-dark(#fff0ec,#3a1d17)}
+.lit th,.lit td{text-align:left;vertical-align:top;font-size:14px;line-height:1.5}
+.lit td:first-child{font-weight:700;min-width:12em}
+.lit a{color:var(--blue);font-weight:400;font-size:13px}
+.verdict{background:var(--ink);color:var(--bg);border-radius:16px;padding:16px 20px;margin:18px 0 0;font-size:16px}
+.verdict b{color:#ffb4a3}
+.st{display:grid;gap:16px}
+.st details{background:var(--bg);border:1.5px solid var(--line);border-radius:16px;padding:0 18px}
+.st details[open]{border-color:var(--ink)}
+.st summary{cursor:pointer;padding:16px 0;font-weight:900;font-size:18px;line-height:1.35;list-style:none;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.st summary::-webkit-details-marker{display:none}
+.st summary small{font-weight:500;font-size:13px;color:var(--mute)}
+.st dl{display:grid;grid-template-columns:7em minmax(0,1fr);gap:8px 14px;margin:0 0 18px;font-size:15px}
+.st dt{font-weight:700;color:var(--mute)}.st dd{margin:0}
+.st ol{margin:0;padding-left:1.2em}
+@media(max-width:600px){.st dl{grid-template-columns:minmax(0,1fr)}.st dt{margin-top:6px}}
+@media(max-width:700px){.lit thead{display:none}.lit tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.lit td{border:0;padding:3px 0}.lit td::before{content:attr(data-l);display:block;font-size:12px;color:var(--mute);font-weight:700}}
+@media(max-width:860px){.lab{grid-template-columns:minmax(0,1fr)}.fig{height:56vh;min-height:360px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<section class="band"><div class="wrap">
+<h1>扭轉紙環剪開實驗室</h1>
+<p class="lead">紙條先扭 n 個半圈、再黏成環，接著畫上等分線把寬度分成 k 等分（k = 1 就是不剪），再沿線剪開。剪完後每個獨立的環會塗上不同顏色；拉動「拉開檢視」可以把環往外拉：沒套住的環能完全分開，套住的環會像鍊子一樣被拉到繃緊，解不開時就停下來。點下方的色塊，則能只看單一個環。</p>
+<nav class="nav scroll"><a href="#lab">實驗室</a><a href="#matrix">全覽表</a><a href="#laws">規律</a><a href="#prior">已有研究</a><a href="#next">可再研究方向</a></nav>
+<div class="lab" id="lab">
+  <div class="fig" id="fig"><span class="hint">拖曳旋轉・雙指縮放</span></div>
+  <div class="panel">
+    <div class="ctl">
+      <div class="row"><label for="n">扭轉半圈數 n <b id="nv">1</b></label><input id="n" type="range" min="0" max="9" value="1"></div>
+      <div class="row"><label for="k">把寬度分成 k 等分 <b id="kv">2</b></label><small id="kd" style="display:block;color:var(--mute);font-size:13px;margin-top:-2px"></small><input id="k" type="range" min="1" max="6" value="2"></div>
+      <div class="row"><label for="p">剪開進度 <b id="pv">0%</b></label><input id="p" type="range" min="0" max="100" value="0"></div>
+      <div class="row"><label for="ex">拉開檢視 <b id="exv">0%</b></label><input id="ex" type="range" min="0" max="100" value="0"></div>
+      <div class="btns">
+        <button id="play" class="primary">✂ 開始剪</button>
+        <button id="dir">右手扭</button>
+        <button id="pred">預測模式：關</button>
+      </div>
+    </div>
+    <div class="res" id="res"></div>
+  </div>
+</div>
+</div></section>
+
+<section class="band" id="matrix" style="background:var(--card)"><div class="wrap">
+<h2>全覽：n 個半圈 × 分成 k 等分</h2>
+<p class="lead">每格寫出剪完的結果，L 是原本紙條的長度。紅框代表結果會打結（n 為奇數且 n ≥ 3）。每格最下面標出剪出來的環能不能分開：只有完全不扭（n = 0）時能分開，只要有扭轉，剪出來的環一定互相套住。點任一格，就會在上方 3D 圖重現。</p>
+<div class="scroll"><table id="mx"></table></div>
+</div></section>
+
+<section class="band" id="laws"><div class="wrap">
+<h2>歸納出的規律</h2>
+<ol class="law">
+<li><b>n 為偶數</b>（雙面）：分成 k 等分剪開，就得到 k 個等長（L）的環。每個環各扭 n 個半圈，任兩個環互相纏繞 n/2 次。</li>
+<li><b>n 為奇數、k 為偶數</b>：得到 k/2 個環，每個長 2L，都打成 (2, n) 環面結（n=1 不打結，n=3 是三葉結，n=5 是五葉結）。</li>
+<li><b>n 為奇數、k 為奇數</b>：中間那條仍是長 L、扭 n 個半圈的單面帶，另外 (k−1)/2 個環長 2L。所有環彼此纏繞。</li>
+<li><b>剪幾刀？</b>n 為奇數時，偏離中線的一刀會繞兩圈才回到起點，同時剪開對稱的另一條線，所以實際刀數比 k−1 少。</li>
+<li><b>一般定理</b>（Godzik 等人）：把 k 條帶子的中心線合起來看，若 n·k 為偶數，就是環面鏈 T(nk/2, k)；若 n·k 為奇數，則是 T(n(k−1)/2, k−1) 再加上一條核心圓。</li>
+</ol>
+<p class="foot">本頁的「邊緣環繞數 Lk」和「環與環纏繞次數」都是用高斯連結積分從 3D 模型即時算出來的，不是查表。帶子沒打結時，扭轉半圈數等於 2×Lk；帶子打結時，壓平後數到的半圈數還要算進結本身的扭曲（寫成 Lk = Tw + Wr，即 Călugăreanu 定理），所以前人科展報告裡的「扭轉數」會因壓平方式不同而有差異。</p>
+</div></section>
+
+<section class="band" id="prior" style="background:var(--card)"><div class="wrap">
+<h2>已有研究成果整理</h2>
+<p class="lead">從早期的魔術與科普，到台灣與日本的學生研究，再到數學論文。紅色標籤是已經做過或證明過的，黃色是做了一部分或還沒查到全文，藍色是仍然開放的問題。</p>
+<div class="scroll"><table class="lit"><thead><tr><th>研究</th><th>層級・年份</th><th>變因</th><th>主要成果</th><th>沒做到的</th></tr></thead><tbody id="litb"></tbody></table></div>
+<div class="verdict" id="verdict"></div>
+</div></section>
+
+<section class="band" id="next"><div class="wrap">
+<h2>可再研究的方向與對策</h2>
+<p class="lead">每個方向都列出研究問題、假設、做法、要量什麼、怎麼跟前人區隔，以及可能卡關的地方和對策。點標題展開。</p>
+<div class="st" id="strat"></div>
+<p class="foot" style="margin-top:18px">難度星等是以國中數學科為基準的粗略判斷。題目確定後，記得再到「中華民國中小學科學展覽會」歷屆作品網站，用關鍵字（莫比烏斯、紙環、扭轉、環繞數、紐結）搜尋最新一屆的作品，避免撞題。</p>
+</div></section>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+{
+const $=id=>document.getElementById(id);
+const COL=['#ff4b2b','#2a6fdb','#f5b700','#12a37a','#9b4dff','#00a6c8'];
+const R=3,W=1.15,TAU=Math.PI*2;
+const st={n:1,k:2,p:0,dir:1,pred:false,shown:true,playing:false,ex:0,solo:-1};
+const KN={1:'不打結',3:'三葉結',5:'五葉結',7:'七葉結 (7₁)',9:'九葉結 (9₁)'};
+
+const pt=(t,s)=>{const a=st.dir*st.n*t/2,c=Math.cos(t),si=Math.sin(t),r=R+s*W*Math.cos(a);return [r*c,r*si,s*W*Math.sin(a)]};
+const curve=(s,T,N)=>{const o=[];for(let i=0;i<N;i++)o.push(pt(T*i/N,s));return o};
+function lk(A,B){let sum=0;const nA=A.length,nB=B.length;
+  const dA=A.map((p,i)=>{const q=A[(i+1)%nA];return [q[0]-p[0],q[1]-p[1],q[2]-p[2],(p[0]+q[0])/2,(p[1]+q[1])/2,(p[2]+q[2])/2]});
+  const dB=B.map((p,i)=>{const q=B[(i+1)%nB];return [q[0]-p[0],q[1]-p[1],q[2]-p[2],(p[0]+q[0])/2,(p[1]+q[1])/2,(p[2]+q[2])/2]});
+  for(const a of dA)for(const b of dB){const rx=a[3]-b[3],ry=a[4]-b[4],rz=a[5]-b[5];
+    const cx=a[1]*b[2]-a[2]*b[1],cy=a[2]*b[0]-a[0]*b[2],cz=a[0]*b[1]-a[1]*b[0];
+    const d=Math.hypot(rx,ry,rz);sum+=(rx*cx+ry*cy+rz*cz)/(d*d*d)}
+  return sum/(4*Math.PI)}
+
+function model(n,k){
+  const cuts=[];for(let j=1;j<k;j++)cuts.push(-1+2*j/k);
+  const comps=[],odd=n%2===1;
+  for(let i=0;i<k;i++){const lo=-1+2*i/k,hi=-1+2*(i+1)/k,m=k-1-i;
+    if(!odd)comps.push({lo,hi,T:TAU,kind:'band',len:1});
+    else if(i<m)comps.push({lo,hi,T:2*TAU,kind:'band',len:2,knot:true});
+    else if(i===m)comps.push({lo,hi,T:TAU,kind:'mob',len:1})}
+  const paths=[];
+  for(const s of cuts){if(!odd)paths.push({s,T:TAU});else if(Math.abs(s)<1e-9)paths.push({s,T:TAU});else if(s<0)paths.push({s,T:2*TAU})}
+  return {comps,cuts,paths,odd}}
+
+function analyze(M){
+  const N=260;
+  for(const c of M.comps){
+    const per=Math.round(N*c.T/TAU);
+    c.core=c.kind==='mob'?curve(0,TAU,N):curve((c.lo+c.hi)/2,c.T,per);
+    if(c.kind==='band')c.lk=Math.round(Math.abs(lk(curve(c.lo,c.T,per),curve(c.hi,c.T,per))))}
+  const L=[];for(let i=0;i<M.comps.length;i++)for(let j=i+1;j<M.comps.length;j++)L.push([i,j,Math.round(Math.abs(lk(M.comps[i].core,M.comps[j].core)))]);
+  return L}
+
+function torusName(n,k){
+  if(k===1)return '';
+  if((n*k)%2===0){const p=n*k/2;return p===0?`${k} 個分開的圓`:`環面鏈 T(${p}, ${k})`}
+  const p=n*(k-1)/2;return `環面鏈 T(${p}, ${k-1}) ＋ 核心圓`}
+
+/* three.js */
+const fig=$('fig');
+const ren=new THREE.WebGLRenderer({antialias:true,alpha:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));fig.prepend(ren.domElement);
+const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(40,1,0.1,100);cam.position.set(0,-9.5,7.5);cam.up.set(0,0,1);
+const ctr=new THREE.OrbitControls(cam,ren.domElement);ctr.enableDamping=true;ctr.enablePan=false;ctr.minDistance=5;ctr.maxDistance=48;
+scene.add(new THREE.HemisphereLight(0xffffff,0x8890a8,0.9));const dl=new THREE.DirectionalLight(0xffffff,0.7);dl.position.set(4,-6,10);scene.add(dl);
+const grp=new THREE.Group();scene.add(grp);
+const resize=()=>{const w=fig.clientWidth,h=fig.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()};
+const ro=new ResizeObserver(resize);ro.observe(fig);
+
+function surf(lo,hi,T,color,op){
+  const nt=Math.round(220*T/TAU),ns=4,pos=[],idx=[];
+  for(let i=0;i<=nt;i++)for(let j=0;j<=ns;j++){const p=pt(T*i/nt,lo+(hi-lo)*j/ns);pos.push(...p)}
+  for(let i=0;i<nt;i++)for(let j=0;j<ns;j++){const a=i*(ns+1)+j,b=a+ns+1;idx.push(a,b,a+1,b,b+1,a+1)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  return new THREE.Mesh(g,new THREE.MeshStandardMaterial({color,side:THREE.DoubleSide,roughness:0.75,metalness:0,transparent:op<1,opacity:op}))}
+function tube(s,T0,color,r){if(T0<=0.01)return null;
+  const pts=[];const N=Math.max(8,Math.round(200*T0/TAU));for(let i=0;i<=N;i++)pts.push(new THREE.Vector3(...pt(T0*i/N,s)));
+  return new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),N,r,6,false),new THREE.MeshStandardMaterial({color,roughness:0.5}))}
+function clear(){while(grp.children.length){const c=grp.children.pop();c.geometry.dispose();c.material.dispose()}}
+
+let M,LINKS;
+function lay(cnt){const cols=cnt<=3?cnt:Math.ceil(cnt/2),rows=cnt<=3?1:2,pos=[];
+  for(let i=0;i<cnt;i++){const c=i%cols,r=Math.floor(i/cols);pos.push([(c-(cols-1)/2)*9,-(r-(rows-1)/2)*6])}return {cols,rows,pos}}
+function fitCam(){const L=lay(M.comps.length),e=st.ex,len=13.5*(1+0.8*e*(L.cols-1))+e*(L.rows-1)*5;
+  const v=cam.position.clone().sub(ctr.target);v.setLength(len);cam.position.copy(ctr.target).add(v)}
+function draw(){
+  clear();
+  const done=st.p>=1&&(!st.pred||st.shown);
+  if(st.p>=1&&st.k>1||st.k===1&&st.p>=1){
+    const g=0.035;
+    if(done&&st.ex>0&&M.comps.length>1){if(!SIM)simInit();simDraw();renderRes(done);return}
+    const L=lay(M.G.length);
+    M.comps.forEach((c,i)=>{const lo=c.lo<=-1+1e-9?c.lo:c.lo+g,hi=c.hi>=1-1e-9?c.hi:c.hi-g;
+      const fade=done&&st.solo>=0&&st.solo!==i;
+      const m=surf(lo,hi,c.T,done?COL[i%COL.length]:'#f4f2ea',fade?0.12:1);if(fade)m.material.depthWrite=false;
+      grp.add(m)});
+  }else{
+    grp.add(surf(-1,1,TAU,'#f4f2ea',1));
+    for(const s of M.cuts){const t=tube(s,TAU,'#9aa0b4',0.012);t&&grp.add(t)}
+    for(const P of M.paths){const t=tube(P.s,P.T*st.p,'#ff4b2b',0.035);if(t)grp.add(t);
+      if(st.p>0){const sp=new THREE.Mesh(new THREE.SphereGeometry(0.09,16,12),new THREE.MeshStandardMaterial({color:'#ff4b2b'}));sp.position.set(...pt(P.T*st.p,P.s));grp.add(sp)}}
+  }
+  renderRes(done)}
+
+function renderRes(done){
+  const n=st.n,k=st.k,c=M.comps,box=$('res');
+  const blades=M.paths.length;
+  if(st.pred&&!st.shown){box.innerHTML=`<p class="big">先猜猜看</p><p>扭 ${n} 個半圈、分成 ${k} 等分剪開，會得到幾個環？各有多長？會不會打結或互相套住？</p><div class="veil"><button class="primary" id="rev">揭曉答案</button></div>`;
+    $('rev').onclick=()=>{st.shown=true;if(st.p<1)animate();else draw()};return}
+  const cnt=c.length,lens=c.map(x=>x.len===2?'2L':'L');
+  let head=k===1?`沒有剪：${n%2?'單面帶（莫比烏斯型）':'雙面環'}`:`得到 ${cnt} 個環`;
+  let html=`<p class="big">${head}</p><p>需要剪 ${blades} 刀${k>1&&blades<k-1?`（不是 ${k-1} 刀：偏離中線的一刀會繞兩圈）`:''}${k>1?`・整體結構：${torusName(n,k)}`:''}</p>`;
+  if(!done&&k>1){html+=`<p>把「剪開進度」拉到 100%，或按「開始剪」看結果。</p>`;box.innerHTML=html;return}
+  html+='<div class="comp">';
+  c.forEach((x,i)=>{let d;
+    if(x.kind==='mob')d=`長 L、寬 ${fr(k)}，仍是<b>單面帶</b>，扭 ${n} 個半圈（跟原本一樣）`;
+    else if(x.knot&&n>=3)d=`長 ${lens[i]}、寬 ${fr(k)}，雙面，<b>${KN[n]||'環面結 T(2,'+n+')'}</b><span class="tag">打結</span><br><small>邊緣環繞數 Lk = ${x.lk}</small>`;
+    else d=`長 ${lens[i]}、寬 ${fr(k)}，雙面，扭 ${2*x.lk} 個半圈${x.knot?'（不打結）':''}<br><small>邊緣環繞數 Lk = ${x.lk}</small>`;
+    const cls=st.solo<0?'':(st.solo===i?' sel':' dim');
+    html+=`<button class="ci${cls}" data-i="${i}" aria-pressed="${st.solo===i}"><span class="sw" style="background:${COL[i%COL.length]}"></span><span>環 ${i+1}：${d}</span></button>`});
+  html+='</div>';
+  if(c.length>1){
+    const multi=M.G.filter(g=>g.length>1).map(g=>'環 '+g.map(i=>i+1).join('、'));
+    let ex;
+    if(M.G.length===c.length)ex='這些環彼此沒有套住，可以完全拉開。';
+    else if(st.ex===0)ex=`${multi.join('；')} 互相套住。拉動滑桿會把環往外拉，套住的環會拉到繃緊、解不開時自動停下。`;
+    else if(SIM&&SIM.act)ex='正在拉開……';
+    else if(SIM&&SIM.far){const stuck=M.G.filter(g=>g.length>1&&g.some(i=>SIM.far[i]>0.4));
+      ex=stuck.length?stuck.map(g=>'環 '+g.map(i=>i+1).join('、')).join('；')+' 已經拉到繃緊，互相卡住解不開，所以停在這裡。':'目前的拉開距離還沒卡住；再往右拉，套住的環就會繃緊停下。';
+      if(M.G.length>1)ex+='沒有套住的環可以完全分開。'}
+    else ex='';
+    ex+=st.ex>0?' 拉開時以每個環的中心線（粗管）表示，紙帶寬度省略。':'';
+    html+=`<p style="margin-top:10px"><b>拉開檢視</b>：${ex}想單獨看某個環的形狀，請點上面的色塊，再點一次恢復。</p>`}
+  if(LINKS.length){html+='<p style="margin-top:10px"><b>環與環的纏繞次數</b>：'+LINKS.map(([i,j,v])=>`${i+1}–${j+1}：${v}`).join('、')+'</p>'}
+  box.innerHTML=html;
+  box.querySelectorAll('.ci').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;st.solo=st.solo===i?-1:i;draw()})}
+const fr=k=>k===1?'原寬':`1/${k}`;
+
+function groupsOf(cnt,links){const p=[...Array(cnt).keys()],f=x=>p[x]===x?x:(p[x]=f(p[x]));
+  for(const [i,j,v] of links)if(v>0)p[f(i)]=f(j);
+  const gs={},gi=[];for(let i=0;i<cnt;i++){const r=f(i);(gs[r]=gs[r]||[]).push(i)}
+  const G=Object.values(gs);G.forEach((g,k)=>g.forEach(i=>gi[i]=k));return {G,gi}}
+/* 物理模擬：每個環是一條不能伸長的珠鏈，同組（互相套住）的環彼此不能穿過 */
+let SIM=null;const BR=0.3;
+function simInit(){SIM={B:[],R:[],act:true,still:0,tick:0};
+  M.comps.forEach(c=>{const s=c.kind==='mob'?0:(c.lo+c.hi)/2,N=Math.round(100*c.T/TAU),P=curve(s,c.T,N);
+    SIM.B.push(P.map(p=>p.slice()));SIM.R.push(P.map((p,i)=>{const q=P[(i+1)%N];return Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2])}))})}
+function cen(P){const c=[0,0,0];for(const p of P){c[0]+=p[0];c[1]+=p[1];c[2]+=p[2]}return c.map(v=>v/P.length)}
+function simTargets(){const L=lay(M.comps.length);return L.pos.map(q=>[q[0]*st.ex,0,q[1]*st.ex])}
+function simStep(){const T=simTargets(),B=SIM.B;let move=0;const before=B.map(cen);
+  SIM.str=SIM.str||B.map(()=>1);B.forEach((P,i)=>{if(SIM.str[i]>1.03)return;const c=cen(P);let d=[T[i][0]-c[0],T[i][1]-c[1],T[i][2]-c[2]];const l=Math.hypot(...d),mx=0.04;if(l>mx)d=d.map(v=>v*mx/l);else d=d.map(v=>v*0.5);
+    for(const p of P){p[0]+=d[0];p[1]+=d[1];p[2]+=d[2]}});
+  for(let it=0;it<12;it++){
+    B.forEach((P,i)=>{const N=P.length,R=SIM.R[i];
+      for(let j=0;j<N;j++){const p=P[j],q=P[(j+1)%N],dx=q[0]-p[0],dy=q[1]-p[1],dz=q[2]-p[2],l=Math.hypot(dx,dy,dz)||1e-9,k=(l-R[j])/l*0.5;
+        p[0]+=dx*k;p[1]+=dy*k;p[2]+=dz*k;q[0]-=dx*k;q[1]-=dy*k;q[2]-=dz*k}
+      for(let j=0;j<N;j++){const p=P[j],q=P[(j+2)%N],dx=q[0]-p[0],dy=q[1]-p[1],dz=q[2]-p[2],l=Math.hypot(dx,dy,dz)||1e-9,m=1.6*R[j];
+        if(l<m){const k=(l-m)/l*0.25;p[0]+=dx*k;p[1]+=dy*k;p[2]+=dz*k;q[0]-=dx*k;q[1]-=dy*k;q[2]-=dz*k}}});
+    const H=new Map(),cs=BR;
+    const KY=(x,y,z)=>((x+512)*1024+(y+512))*1024+(z+512);
+    B.forEach((P,i)=>P.forEach((p,j)=>{const k=KY(Math.floor(p[0]/cs),Math.floor(p[1]/cs),Math.floor(p[2]/cs));let a=H.get(k);if(!a)H.set(k,a=[]);a.push(i,j)}));
+    B.forEach((P,i)=>P.forEach((p,j)=>{const cx=Math.floor(p[0]/cs),cy=Math.floor(p[1]/cs),cz=Math.floor(p[2]/cs);
+      for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)for(let c=-1;c<=1;c++){const L=H.get(KY(cx+a,cy+b,cz+c));if(!L)continue;
+        for(let u=0;u<L.length;u+=2){const i2=L[u],j2=L[u+1];if(i2<i||(i2===i&&j2<=j))continue;
+          if(M.gi[i2]!==M.gi[i])continue;
+          if(i2===i){const N=P.length,dj=Math.abs(j2-j);if(Math.min(dj,N-dj)<4)continue}
+          const q=B[i2][j2],dx=q[0]-p[0],dy=q[1]-p[1],dz=q[2]-p[2],l=Math.hypot(dx,dy,dz);
+          if(l<BR&&l>1e-9){const k=(l-BR)/l*0.5;p[0]+=dx*k;p[1]+=dy*k;p[2]+=dz*k;q[0]-=dx*k;q[1]-=dy*k;q[2]-=dz*k}}}}))}
+  SIM.str=B.map((P,i)=>{let m=0;const N=P.length;for(let j=0;j<N;j++){const p=P[j],q=P[(j+1)%N];m=Math.max(m,Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2])/SIM.R[i][j])}return m});
+  B.map(cen).forEach((c,i)=>{move+=Math.hypot(c[0]-before[i][0],c[1]-before[i][1],c[2]-before[i][2])});
+  const far=B.map(cen).reduce((s,c,i)=>s+Math.hypot(c[0]-T[i][0],c[1]-T[i][1],c[2]-T[i][2]),0);
+  SIM.tick++;
+  if(SIM.tick%100===0){SIM.gain=(SIM.prevFar??1e9)-far;SIM.prevFar=far}
+  if(far<0.05*B.length||SIM.tick>1500||(SIM.tick>=200&&SIM.gain<0.08)){if(++SIM.still>0){SIM.act=false;SIM.far=B.map(cen).map((c,i)=>Math.hypot(c[0]-T[i][0],c[1]-T[i][1],c[2]-T[i][2]));renderRes(true)}}else SIM.still=0}
+function simDraw(){B=SIM.B;B.forEach((P,i)=>{const fade=st.solo>=0&&st.solo!==i;
+  const pts=P.map(p=>new THREE.Vector3(...p));const g=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),P.length,0.13,8,true);
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:COL[i%COL.length],roughness:0.6,transparent:fade,opacity:fade?0.12:1}));grp.add(m)})}
+var B;
+function rebuild(){M=model(st.n,st.k);LINKS=analyze(M);Object.assign(M,groupsOf(M.comps.length,LINKS));SIM=null;st.solo=-1;if(st.pred)st.shown=false;draw();fitCam()}
+function sync(){$('nv').textContent=st.n;$('kv').textContent=st.k;$('kd').textContent=st.k===1?'k = 1：不剪，只看扭好的紙環':`在紙上畫 ${st.k-1} 條等分線，沿線剪開（剪完不一定是 ${st.k} 個環）`;$('pv').textContent=Math.round(st.p*100)+'%';$('n').value=st.n;$('k').value=st.k;$('p').value=Math.round(st.p*100);$('exv').textContent=Math.round(st.ex*100)+'%';$('ex').value=Math.round(st.ex*100)}
+
+let raf=0;
+function animate(){if(st.playing)return;st.playing=true;st.p=0;const t0=performance.now(),dur=matchMedia('(prefers-reduced-motion: reduce)').matches?10:3200;
+  const step=now=>{st.p=Math.min(1,(now-t0)/dur);sync();draw();if(st.p<1)requestAnimationFrame(step);else st.playing=false};requestAnimationFrame(step)}
+
+$('n').oninput=e=>{st.n=+e.target.value;st.p=0;sync();rebuild()};
+$('k').oninput=e=>{st.k=+e.target.value;st.p=0;sync();rebuild()};
+$('p').oninput=e=>{st.p=e.target.value/100;sync();draw()};
+$('ex').oninput=e=>{st.ex=e.target.value/100;if(st.p<1){st.p=1;if(st.pred)st.shown=true}if(SIM){SIM.act=true;SIM.still=0;SIM.tick=0;SIM.prevFar=undefined;SIM.far=null}sync();draw();fitCam()};
+$('play').onclick=()=>{if(!st.pred||st.shown)animate();else{st.p=1;sync();draw()}};
+$('dir').onclick=e=>{st.dir*=-1;e.target.textContent=st.dir>0?'右手扭':'左手扭';rebuild()};
+$('pred').onclick=e=>{st.pred=!st.pred;e.target.classList.toggle('on',st.pred);e.target.textContent='預測模式：'+(st.pred?'開':'關');st.shown=!st.pred;draw()};
+
+/* matrix */
+function sep(n,k){if(k===1)return '<span class="sp na">不剪</span>';
+  const cnt=n%2===0?k:Math.ceil(k/2);
+  if(cnt===1)return '<span class="sp na">只有 1 個環</span>';
+  return n===0?'<span class="sp ok">可完全分開</span>':'<span class="sp no">套住，拉不開</span>'}
+function cell(n,k){let t;if(n%2===0)t=k===1?'1 環 L':`${k} 環 × L`;
+  else if(k===1)t='單面帶';else if(k%2===0)t=`${k/2} 環 × 2L`;else t=`${(k-1)/2} 環 × 2L<br>+ 1 單面帶 L`;
+  return t+'<br>'+sep(n,k)}
+{let h='<tr><th>n＼k</th>'+[1,2,3,4,5,6].map(k=>`<th>k=${k}${k===1?'<br><small>不剪</small>':`<br><small>${k-1} 條線</small>`}</th>`).join('')+'</tr>';
+ for(let n=0;n<=8;n++){h+=`<tr><th>n=${n}</th>`+[1,2,3,4,5,6].map(k=>`<td><button data-n="${n}" data-k="${k}" class="${n%2&&n>=3&&k>1?'knot':''}">${cell(n,k)}</button></td>`).join('')+'</tr>'}
+ $('mx').innerHTML=h;
+ $('mx').onclick=e=>{const b=e.target.closest('button');if(!b)return;st.n=+b.dataset.n;st.k=+b.dataset.k;st.p=0;sync();rebuild();$('fig').scrollIntoView({behavior:'smooth',block:'center'});setTimeout(animate,400)}}
+
+/* literature */
+const A=(u,t)=>`<a href="${u}">${t}</a>`;
+const LIT=[
+ ['魔術「阿富汗帶」(Afghan Bands)','魔術文獻，1882 年起','0、1、2 個半圈','三條看似相同的紙環剪開後，分別變成兩個環、一個長環、兩個互套的環','只是表演，沒有一般化',A('https://origamiheaven.com/historyoftheafghanbands.htm','紙藝歷史整理'),'c-hi','已知'],
+ ['Martin Gardner〈Mathematical Games〉','Scientific American，1957','1 個半圈；1/3 處剪；從環面剪帶子','1/3 處剪出大環套小環；環面只能剪出偶數半圈的帶子','沒有系統化討論 n',A('https://www.scientificamerican.com/article/mathematical-games-1957-06/','Scientific American'),'c-hi','已知'],
+ ['〈莫比烏斯環和相關紙環〉','第 52 屆全國科展（2012）','1 個半圈 × 2～8 等分','分析長度、旋轉角、纏繞結構，推導交點個數公式','只做 1 個半圈',A('http://www.mathland.idv.tw/fun/moebius.html','數學樂園介紹'),'c-hi','做過'],
+ ['〈看不見卻存在：探討莫比烏斯盤〉','第 54 屆全國科展（2014）','莫比烏斯盤','被第 61 屆作品引用；本頁未取得全文','—','','c-mid','待查'],
+ ['〈眾星「環」集：莫比烏斯帶的奇幻旅程〉','彰化縣 106 年科展（2017）','改成柱體、不同旋轉角、不同等分、昆蟲爬行路徑','觀察剪開結果與爬行軌跡','第 63 屆評語：黏貼與測量不夠精確','','c-hi','做過'],
+ ['〈環環相扣〉','彰化縣科展（2019）','翻轉角度、剪開位置','比較不同組合的結果','本頁未取得全文','','c-mid','待查'],
+ ['〈從莫比烏斯環探討 k 股 n 葉結〉','第 61 屆全國科展 國中組佳作（2021）','扭轉圈數、股數 k','扭轉 × 股數 = 葉數；證明 gcd(k,n)=1 的存在條件；寫出參數方程','沒談環繞數；扭轉只能是 0.5 的倍數',A('https://twsf.ntsec.gov.tw/activity/race-1/61/pdf/NPHSF2021-030415.pdf','作品說明書'),'c-mid','部分'],
+ ['〈變幻莫測〉','第 63 屆全國科展 國中組（2023）','扭 1～8 個半圈 × n 等分；P/Q 位置剪','完整的環數、長度、扭轉數公式（奇數得 2m+2）','評審要求正式證明；扭轉數靠壓平後數',A('https://twsf.ntsec.gov.tw/activity/race-1/63/pdf/NPHSF2023-030405.pdf','作品說明書'),'c-hi','做過'],
+ ['〈翻轉圈圈魔法〉','新竹市第 44 屆科展 國小組（115 學年度）','180°～900° × 2～8 等分 × 多環垂直黏接','奇數倍長度變 2 倍、偶數倍變兩環；整理黏接後是否分離的規律','沒談打結或纏繞；規律未證明',A('https://science.hc.edu.tw/fileUpload/winningEntries/115%e5%b9%b4%e5%ba%a6%e5%9c%8b%e5%b0%8f%e7%b5%84%e6%95%b8%e5%ad%b8%e7%ac%ac%e4%ba%8c%e5%90%8d0420-12363573.pdf','作品說明書'),'c-hi','做過'],
+ ['〈メビウスの輪の分割〉','日本三重縣學生研究（約 2023）','扭轉數 × 分割數 × 剪開位置','偶數扭轉不變；奇數扭轉得 2(n+1) 的猜想','未證明；作者說扭轉數不好判定',A('https://www.pref.mie.lg.jp/common/content/001273714.pdf','研究海報'),'c-mid','部分'],
+ ['台大通識學習單、台北科學日','教學活動','1/3 處剪、兩環垂直黏接、反向莫比烏斯黏接','提供答案與圖示','不是研究',A('https://oge.ntu.edu.tw/storage/file/textbook/678684bcc3b35_16003L03.pdf','台大學習單'),'c-hi','已知'],
+ ['Godzik、Ho、Jones、Mattman、Sours','數學論文（arXiv 2019）','m 個半圈 × 分成 n 等分','mn 為偶數得環面鏈 T(mn/2, n)；為奇數得 T(m(n−1)/2, n−1) 加核心圓','已經完整解決這個分類問題',A('https://arxiv.org/abs/1901.01225','arXiv 1901.01225'),'c-hi','已證'],
+ ['Schwartz〈The optimal paper Moebius band〉','Annals of Mathematics（2025）','紙帶長寬比','證明光滑的紙莫比烏斯帶長寬比一定大於 √3，解決 1977 年的猜想','只處理 1 個半圈',A('https://arxiv.org/abs/2308.12641','arXiv 2308.12641'),'c-hi','已證'],
+ ['Brown–Schwartz、Denne–Patterson 等','數學論文（2023～2025）','多個半圈的長寬比','2 個半圈的環長寬比至少是 2（已證明）；3 個半圈已有長寬比 3 的做法（crisscross、cup 兩種模型）；任何 n 都有長寬比小於 6 的做法，7 個半圈以上更可壓到 3√3 ≈ 5.2 以內','3 個半圈「不可能小於 3」的猜想仍未證明',A('https://arxiv.org/abs/2509.18370','arXiv 2509.18370'),'c-lo','開放']];
+$('litb').innerHTML=LIT.map(r=>`<tr><td data-l="研究"><span class="cover ${r[6]}">${r[7]}</span><br>${r[0]}</td><td data-l="層級・年份">${r[1]}</td><td data-l="變因">${r[2]}</td><td data-l="主要成果">${r[3]}</td><td data-l="沒做到的">${r[4]}${r[5]?'<br>'+r[5]:''}</td></tr>`).join('');
+$('verdict').innerHTML='結論：「扭幾個半圈 × 剪成幾份，會得到幾個環、多長、打不打結」已經被科展做了至少 5 次，數學上也有完整定理，再做一次很難有新意。還沒被做過的是：<b>精確定義扭轉數</b>、<b>紙帶最短長度</b>，以及<b>非均勻扭轉、非平行剪法</b>。';
+
+const STRAT=[
+ {t:'方向一：用環繞數重新定義「扭轉數」',lv:'★★☆・國中／高中數學',q:'紙環打結以後，「扭了幾個半圈」要怎麼數，才不會因為壓平的方式不同而改變？',
+  h:'壓平後數到的半圈數會隨擺法改變，但兩條邊的環繞數 Lk 永遠不變：奇數 n 沿中線剪開得 Lk = 2n；偶數 n 每條 Lk = n/2。',
+  d:['用雙色紙，兩條邊各用不同顏色的筆描邊。','剪開後把兩條彩色邊當成兩條繩子，平放在桌上，只數「紅邊和藍邊交叉」的點，依方向記 +1 或 −1，總和除以 2 就是 Lk。','同一個環用 3 種不同擺法壓平，每種都數一次「半圈數」和 Lk。','用本頁的計算結果核對，再推廣到 n = 0～9。'],
+  m:'每種擺法的半圈數、每個交叉點的正負號、Lk',
+  x:'第 63 屆評審要求的「正式證明」、日本研究說的「扭轉數不好判定」，都正好可以用這個方法解決；台灣科展還沒有人用環繞數。',
+  r:'交叉點正負號容易判斷錯 → 在邊上畫箭頭標方向，兩人各數一次再比對。Wr（結的扭曲）不是整數、不好直接量 → 以 Lk 為主角，Wr 用 Lk − Tw 間接算出。'},
+ {t:'方向二：最短紙條實驗（長寬比）',lv:'★★★・高中或資優班',q:'寬度固定時，紙條最短要多長，才能扭 n 個半圈黏成環，而且不撕、不皺？',
+  h:'實測的最短長寬比會比論文的理論下界大一些（受紙厚和膠帶影響），而且隨 n 增加；1 個半圈應接近但大於 √3 ≈ 1.73，2 個半圈大於 2。',
+  d:['固定紙寬 2 cm，長度從 12 cm 開始，每次減 0.5 cm。','分兩套規則比：A 只能光滑彎曲（不能有摺痕）；B 允許摺（摺紙紐結法）。','每個長度由 3 人各試 5 次，記錄成功率。','畫出「n 對最小長寬比」的圖，和論文的數值比較。'],
+  m:'成功的最短長度、成功率、紙張厚度與材質',
+  x:'台灣科展沒人做過；直接接上 2025 年剛證明的定理，以及 3 個半圈還沒解決的猜想。',
+  r:'紙厚和膠帶會讓實測值偏離理論 → 換更薄的描圖紙重做，並分析誤差來源。「不皺」的判定很主觀 → 事先訂好標準，每次都拍照記錄。'},
+ {t:'方向三：左右扭混合，與「剪完再剪」',lv:'★☆☆・國小高年級／國中',q:'(a) 先右扭 a 個半圈、再左扭 b 個半圈，剪開的結果是不是只看淨扭轉 a − b？(b) 把剪出來的環再剪一次（第二代、第三代），結果能不能用公式預測？',
+  h:'(a) 結果只由 a − b 決定，因為左右扭可以互相抵消。(b) 莫比烏斯帶 → 一個扭 4 個半圈的長環 → 兩個各扭 4 個半圈、互纏 2 次的環 → ……每一代都可以用前一代的扭轉數推出來。',
+  d:['列出 a、b = 0～4 的所有組合，各做一個環，沿中線剪開。','比較 a − b 相同、但 a、b 不同的組別，結果是否一樣。','從莫比烏斯帶開始連續剪三代，每代都記錄環數、長度、扭轉數、互纏次數。'],
+  m:'環數、長度、半圈數、互纏次數（可配合方向一的 Lk 數法）',
+  x:'前人都只做同一個方向的扭轉；「剪兩次」只在科普文章中出現過，沒有被系統整理。',
+  r:'第三代的紙會太窄、很難剪 → 起始改用寬 6 cm、長 60 cm 的紙。左右扭在紙上容易混淆 → 正反面用不同顏色，扭的位置先做記號。'},
+ {t:'方向四：斜剪與螺旋剪',lv:'★★★・國中資優／高中',q:'剪刀線不和邊緣平行，而是每繞一圈就往旁邊偏 1/q 個寬度，會剪出什麼樣的結？',
+  h:'剪出來的環會是不同參數的環面結或環面鏈，參數跟偏移量 q 和扭轉數 n 有關。',
+  d:['先把紙條攤平，畫上斜的平行線，當作剪刀路線。','規定剪刀碰到邊緣時要怎麼處理（例如從對面的對應點繼續）。','剪開後數交叉數，判斷是哪一種結。','整理成「n、q 對結型」的表，試著找出規律。'],
+  m:'剪刀繞了幾圈、得到幾個環、每個環的交叉數與結型',
+  x:'所有前人研究都只沿平行線剪，這是完全不同的變因。',
+  r:'路線碰到邊緣時的規則很容易講不清楚 → 先從莫比烏斯帶開始（對面就是同一條邊），把規則定義清楚再推廣。結型難判斷 → 只比較交叉數與環數，結型留到討論。'},
+ {t:'不建議單獨做：多環垂直黏接',lv:'★☆☆・已接近飽和',q:'把幾個莫比烏斯帶和普通環垂直黏在一起再剪開。',h:'—',
+  d:['新竹市 115 學年度國小組、台大通識學習單、台北科學日都做過。'],m:'—',
+  x:'若真的要做，要加入方向一的環繞數分析，或改成三維排列，才會有新意。',r:'容易被評審認為重複前人作品。'}];
+$('strat').innerHTML=STRAT.map((s,i)=>`<details${i===0?' open':''}><summary>${s.t}<small>${s.lv}</small></summary><dl>
+<dt>研究問題</dt><dd>${s.q}</dd><dt>假設</dt><dd>${s.h}</dd><dt>做法</dt><dd><ol>${s.d.map(x=>`<li>${x}</li>`).join('')}</ol></dd>
+<dt>要量什麼</dt><dd>${s.m}</dd><dt>與前人區隔</dt><dd>${s.x}</dd><dt>風險與對策</dt><dd>${s.r}</dd></dl></details>`).join('');
+
+function loop(){if(SIM&&SIM.act&&st.ex>0&&st.p>=1){const t0=performance.now();do simStep();while(SIM.act&&performance.now()-t0<14);clear();simDraw()}ctr.update();ren.render(scene,cam);raf=requestAnimationFrame(loop)}
+resize();sync();rebuild();loop();
+}
+</script>
+</body>
+</html>
