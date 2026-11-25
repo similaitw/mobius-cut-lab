@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>用環繞數定義扭轉數</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 科展研究手冊，一步一步、定義清楚、可以拿去做實驗
+   IDEA: 數學課本的「定義—圖—例子」排版，每個定義旁邊一張可驗證的圖
+   PICTURE: 程式畫出的紙帶圖，紅藍兩條邊、正反面不同色，交叉點自動標號並計算
+   COLOUR and TYPE: 白紙、墨藍字、紅邊 #e8402a、藍邊 #2a6fdb；Noto Sans TC
+   LAYOUT: 單欄閱讀，圖文左右並排（窄螢幕上下），上方步驟導覽 */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#14161f);--ink:light-dark(#1b1d2b,#eceef6);--mute:light-dark(#5d6275,#a3a8bb);--line:light-dark(#e3e4ea,#2c3040);--card:light-dark(#f6f6f9,#1c1f2b);--red:#e8402a;--blue:#2a6fdb;--front:light-dark(#ffffff,#2a2e40);--back:light-dark(#dfe5f2,#454c66)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(24px,4vw,56px) max(5vw,16px)}
+.wrap{max-width:1040px;margin:0 auto}
+h1{font-size:clamp(28px,4.4vw,42px);line-height:1.12;margin:0 0 8px;font-weight:900;text-wrap:balance}
+h2{font-size:clamp(21px,2.8vw,28px);line-height:1.2;margin:0 0 12px;font-weight:900}
+h3{font-size:17px;margin:18px 0 6px}
+.lead{color:var(--mute);margin:0 0 18px;max-width:70ch}
+a{color:var(--blue)}
+.nav{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin:0 0 8px}
+.nav a{flex:none;color:var(--ink);text-decoration:none;font-weight:700;font-size:14px;padding:8px 14px;border-radius:99px;border:1.5px solid var(--line)}
+.nav a:hover{border-color:var(--ink)}
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start;padding:28px 0;border-top:1px solid var(--line)}
+.step:first-of-type{border-top:0}
+.num{display:inline-block;font-weight:900;color:var(--red);font-size:14px;margin-bottom:2px}
+.def{background:var(--card);border-left:4px solid var(--ink);border-radius:0 12px 12px 0;padding:12px 16px;margin:10px 0}
+.def>b:first-child{display:block;font-size:13px;color:var(--mute);margin-bottom:2px}
+.thm{border:2px solid var(--red);border-radius:14px;padding:14px 18px;margin:12px 0}
+.thm b.t{display:block;color:var(--red);font-size:14px;margin-bottom:4px}
+.fig{background:var(--card);border-radius:16px;padding:10px}
+.fig svg{display:block;width:100%;height:auto}
+.cap{font-size:13px;color:var(--mute);margin:6px 4px 0}
+.formula{font-size:clamp(20px,3vw,26px);font-weight:900;text-align:center;margin:10px 0;letter-spacing:.02em}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:center}
+th{color:var(--mute);font-weight:700;font-size:14px}
+td.l,th.l{text-align:left}
+.scroll{overflow-x:auto}
+.cnt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.cnt div{background:var(--bg);border-radius:10px;padding:6px 8px;text-align:center;font-size:13px;color:var(--mute)}
+.cnt b{display:block;font-size:20px;color:var(--ink)}
+.warn li{margin-bottom:6px}
+ol.steps li{margin-bottom:8px}
+.back{font-weight:700;text-decoration:none}
+.foot{font-size:13px;color:var(--mute)}
+@media(max-width:780px){.step{grid-template-columns:minmax(0,1fr);gap:14px}}
+@media print{.nav,.back{display:none}.step{break-inside:avoid}}
+</style>
+</head>
+<body>
+<section class="band"><div class="wrap">
+<a class="back" href="./">← 回到扭轉紙環剪開實驗室</a>
+<h1>方向一：用環繞數重新定義「扭轉數」</h1>
+<p class="lead">紙環打結以後，把它壓平來數「扭了幾個半圈」，會因為擺法不同而數出不同答案。這份手冊把整個量測流程拆成六個定義和一個定理，每一步都附圖。每張圖的交叉點和數字都是程式依照圖形實際算出來的，可以直接拿來當實驗的對照。</p>
+<nav class="nav"><a href="#s1">1 紙帶與方向</a><a href="#s2">2 交叉點</a><a href="#s3">3 正負號</a><a href="#s4">4 環繞數 Lk</a><a href="#s5">5 翻面 Tw</a><a href="#s6">6 自跨 Wr</a><a href="#thm">定理</a><a href="#check">兩種擺法</a><a href="#exp">實驗步驟</a><a href="#pred">預測表</a></nav>
+</div></section>
+
+<section class="band" style="padding-top:0"><div class="wrap">
+
+<div class="step" id="s1"><div>
+<span class="num">步驟 1</span><h2>紙帶、邊和方向</h2>
+<p>剪開後的每一個環都是一條<b>雙面紙帶</b>。它有兩條邊，我們把一條描成紅色、另一條描成藍色。</p>
+<div class="def"><b>定義 1　定向</b>沿著紙帶選一個前進方向，在紅邊和藍邊上都畫同方向的箭頭。之後所有的計算都依照這個方向。</div>
+<p>為什麼要畫箭頭？下一步判斷交叉點的正負號時需要知道線的方向。只要兩條邊箭頭同向，選哪一個前進方向都會得到同樣的答案。</p>
+<p class="foot">只有雙面紙帶才有兩條邊。沒剪開的莫比烏斯帶只有一條邊，不適用這個方法。</p>
+</div><div class="fig"><svg id="f1" viewBox="0 0 400 190" role="img" aria-label="一段平放的紙帶，上緣紅色、下緣藍色，箭頭都向右"></svg><p class="cap">圖 1　紙帶平放：紅邊、藍邊都畫上同方向的箭頭；中間虛線是中心線。</p></div></div>
+
+<div class="step" id="s2"><div>
+<span class="num">步驟 2</span><h2>從正上方看：交叉點</h2>
+<div class="def"><b>定義 2　投影圖與交叉點</b>把紙環放在桌上，從正上方往下看。兩條線在畫面上相交的地方叫做<b>交叉點</b>。交叉點上有一條線在上面、一條在下面。</div>
+<p>畫成圖時，下面那條線在交叉處斷開，這是紐結理論的標準畫法。</p>
+<p>紙帶上會出現三種交叉點：紅和藍交叉、紅和紅交叉、藍和藍交叉。<b>計算環繞數時只數紅和藍交叉的點。</b></p>
+</div><div class="fig"><svg id="f2" viewBox="0 0 400 200" role="img" aria-label="兩條線交叉，下面的線在交叉處斷開"></svg><p class="cap">圖 2　紅線在上、藍線在下：藍線在交叉處斷開。</p></div></div>
+
+<div class="step" id="s3"><div>
+<span class="num">步驟 3</span><h2>交叉點的正負號</h2>
+<div class="def"><b>定義 3　正負號</b>在交叉點上，把<b>上面那條線的箭頭</b>轉向<b>下面那條線的箭頭</b>（轉小於 180° 的那個方向）：<br>逆時針轉 → 記 <b style="display:inline;color:var(--ink)">+1</b>；順時針轉 → 記 <b style="display:inline;color:var(--ink)">−1</b>。</div>
+<p>這就是紐結理論的交叉點符號，也可以用右手判斷。學生最容易在這一步出錯，建議兩個人各判斷一次再對答案。</p>
+<p class="foot">正負號跟紙帶扭的方向（左手扭或右手扭）有關。同一個實驗裡只要規則一致，最後比較的是絕對值。</p>
+</div><div class="fig"><svg id="f3" viewBox="0 0 400 210" role="img" aria-label="左邊是正交叉，右邊是負交叉"></svg><p class="cap">圖 3　左：上線（紅）逆時針轉到下線（藍），記 +1。右：順時針，記 −1。</p></div></div>
+
+<div class="step" id="s4"><div>
+<span class="num">步驟 4</span><h2>環繞數 Lk</h2>
+<div class="def"><b>定義 4　邊緣環繞數</b>把所有紅藍交叉點的正負號加起來，再除以 2：</div>
+<p class="formula">Lk ＝（紅藍交叉點正負號總和）÷ 2</p>
+<div class="thm"><b class="t">性質　Lk 不會因擺法而改變</b>只要不剪斷、不撕破，不管紙環怎麼擺、怎麼拉，Lk 都一樣。換擺法時，紅藍交叉點只會「一正一負」成對出現或消失，所以總和不變。</div>
+<p>所以 Lk 才是可靠的量，可以拿它當「扭轉多少」的正式定義。帶子沒打結時，扭轉的半圈數就等於 2 × Lk。</p>
+</div><div class="fig"><svg id="f4" viewBox="0 0 400 230" role="img" aria-label="把兩條線拉開，一正一負兩個交叉點一起消失"></svg><p class="cap">圖 4　把藍線往下拉：原本的 +1 和 −1 兩個交叉點一起消失，總和仍然是 0。</p></div></div>
+
+<div class="step" id="s5"><div>
+<span class="num">步驟 5</span><h2>翻面：扭轉數 Tw</h2>
+<div class="def"><b>定義 5　翻面與 Tw</b>紙帶平放時，看到正面變成反面（或反面變成正面）的地方叫做一次<b>翻面</b>，也就是一個半圈。每次翻面都依它的紅藍交叉點記 +1 或 −1，總和除以 2 就是扭轉數 Tw。</div>
+<p class="formula">Tw ＝（翻面正負號總和）÷ 2</p>
+<p>從圖 5 可以看到：<b>每翻一次面，紅邊和藍邊就交叉一次</b>，也就是剛好產生一個紅藍交叉點。這是後面定理的第一個關鍵。</p>
+</div><div class="fig"><svg id="f5" viewBox="0 0 400 190" role="img" aria-label="紙帶中間翻面一次，紅邊和藍邊交叉一次，正面白色反面灰藍色"></svg><div class="cnt" id="c5"></div><p class="cap">圖 5　白色是正面、灰藍色是反面。翻面處紅藍兩邊交叉一次。</p></div></div>
+
+<div class="step" id="s6"><div>
+<span class="num">步驟 6</span><h2>自跨：纏繞數 Wr</h2>
+<div class="def"><b>定義 6　自跨與 Wr</b>紙帶平放時，帶子整條從自己上面跨過去的地方叫做<b>自跨</b>。看中心線的交叉點，依定義 3 記 +1 或 −1，總和就是纏繞數 Wr。</div>
+<p class="formula">Wr ＝ 中心線自跨點正負號總和</p>
+<p>從圖 6 可以看到：一次自跨會產生<b>四個邊的交叉點</b>（紅紅、藍藍、紅藍、藍紅）。其中紅藍的有兩個，而且<b>正負號一樣</b>，都和中心線那個交叉點同號。這是第二個關鍵。</p>
+</div><div class="fig"><svg id="f6" viewBox="0 0 400 260" role="img" aria-label="一條紙帶從另一段紙帶上方跨過，四個邊交叉點"></svg><div class="cnt" id="c6"></div><p class="cap">圖 6　上面那段紙帶整條蓋過下面那段：紅藍交叉 2 個、同號。</p></div></div>
+
+<div class="step" id="thm"><div>
+<span class="num">定理</span><h2>Lk ＝ Tw ＋ Wr（平放版）</h2>
+<div class="thm"><b class="t">定理</b>把一條雙面紙帶平放在桌上（只有翻面和自跨），則<p class="formula" style="margin:6px 0">Lk ＝ Tw ＋ Wr</p>也就是：紅藍交叉總和 ÷ 2 ＝ 翻面總和 ÷ 2 ＋ 自跨總和。</div>
+<h3>證明（數交叉點）</h3>
+<ol>
+<li>紙帶平放時，紅藍交叉點只會出現在兩種地方：翻面處和自跨處。</li>
+<li>每次翻面恰好貢獻 1 個紅藍交叉點，正負號就是這次翻面的正負號（步驟 5）。</li>
+<li>每次自跨恰好貢獻 2 個紅藍交叉點，兩個都和中心線的自跨點同號（步驟 6）。</li>
+<li>所以紅藍交叉總和 ＝ 翻面總和 ＋ 2 × 自跨總和。兩邊同除以 2，得 Lk ＝ Tw ＋ Wr。■</li>
+</ol>
+<p>這個定理說明了前人「扭轉數」不一致的原因：換一種擺法，Wr 變了，翻面數 Tw 就會跟著變，但兩者的和 Lk 不變。這是一般的 Călugăreanu 定理在平放紙帶上的特例，國中生就能用數交叉點的方式完整證明。</p>
+</div><div class="fig"><svg id="f7" viewBox="0 0 400 300" role="img" aria-label="定理示意：交叉點分成翻面和自跨兩類"></svg><p class="cap">圖 7　紅藍交叉點分兩類：翻面處各 1 個，自跨處各 2 個。</p></div></div>
+
+<div class="step" id="check" style="grid-template-columns:minmax(0,1fr)"><div>
+<span class="num">驗證</span><h2>同一個環，兩種擺法</h2>
+<p>莫比烏斯帶（n = 1）沿中線剪開，得到一個長 2L、沒打結的環，3D 模型算出 |Lk| = 2。下面把它用兩種方式平放：</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+<div class="fig"><svg id="f8a" viewBox="0 0 400 300" role="img" aria-label="擺成圓形，翻面 4 次"></svg><div class="cnt" id="c8a"></div><p class="cap">擺法 A：擺成一個圓，翻面 4 次，沒有自跨。</p></div>
+<div class="fig"><svg id="f8b" viewBox="0 0 400 300" role="img" aria-label="擺成 8 字形，翻面 2 次，自跨 1 次"></svg><div class="cnt" id="c8b"></div><p class="cap">擺法 B：擺成 8 字形，翻面只剩 2 次，但多了 1 次自跨。</p></div>
+</div>
+<p style="margin-top:14px">兩種擺法數到的半圈數（4 和 2）不同，但 Lk 都是 2，正好就是前人報告裡扭轉數不一致的情形。上面的卡片數字都是程式從圖形算出來的。</p>
+</div>
+
+<div class="step" id="exp" style="grid-template-columns:minmax(0,1fr)"><div>
+<span class="num">實驗</span><h2>實驗步驟與記錄表</h2>
+<ol class="steps">
+<li><b>準備</b>：寬 4 cm、長 40 cm 的紙條。兩條長邊分別用紅筆、藍筆描邊，邊上每隔 5 cm 畫一個同方向的箭頭。</li>
+<li><b>製作</b>：扭 n 個半圈後黏成環（n = 1～5），再沿中線剪開。偶數 n 會得到兩個環，各自分開記錄。</li>
+<li><b>擺法 A</b>：把剪出的環盡量擺成大圓，數翻面次數和正負號、自跨點和正負號，再數所有紅藍交叉點。</li>
+<li><b>擺法 B、C</b>：換成 8 字形，或任意你想到的擺法（打結的環可擺成標準的結圖），每種都重數一次。</li>
+<li><b>核對</b>：每一列都檢查「紅藍總和 ÷ 2」是否等於「翻面總和 ÷ 2 ＋ 自跨總和」，再和本頁預測表、實驗室網頁的 Lk 比較。</li>
+<li><b>雙人複核</b>：兩人各自判斷正負號，有不一致的交叉點就拍照討論。</li>
+</ol>
+<div class="scroll"><table>
+<thead><tr><th>n</th><th>環編號</th><th>擺法</th><th>翻面次數</th><th>翻面總和</th><th>自跨次數</th><th>自跨總和</th><th>紅藍交叉總和</th><th>Lk</th><th>Tw＋Wr</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>1</td><td>A 圓形</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>1</td><td>1</td><td>B 8 字</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>3</td><td>1</td><td>A 圓形</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>3</td><td>1</td><td>C 三葉結</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</tbody></table></div>
+<p class="foot">可以直接列印本頁當記錄表（瀏覽器的列印功能），導覽列會自動隱藏。</p>
+</div></div>
+
+<div class="step" id="pred" style="grid-template-columns:minmax(0,1fr)"><div>
+<span class="num">預測</span><h2>沿中線剪開的預測表</h2>
+<p>以下 |Lk| 由實驗室網頁的 3D 模型算出，並用本頁的數交叉點方法交叉核對過（n = 1、2、3、5）。</p>
+<div class="scroll"><table>
+<thead><tr><th>n</th><th>剪開結果</th><th>每個環的 |Lk|</th><th>擺成大圓時的翻面次數</th><th>擺成標準結圖時</th><th>環與環纏繞</th></tr></thead>
+<tbody id="ptab"></tbody></table></div>
+<div class="thm" style="margin-top:16px"><b class="t">值得驗證的發現</b>第 63 屆全國科展〈變幻莫測〉報告 n = 3 剪開後「扭轉 8 個半圈」。但依本頁的預測，|Lk| = 6；若擺成標準三葉結圖（3 個同號自跨，Wr = 3），翻面應該是 6 次，而不是 8 次。差異可能來自擺法不同（例如結圖不是最簡的），或計數方式不同。這正好是這個題目可以用實驗回答的問題。</div>
+</div></div>
+
+<div class="step" style="grid-template-columns:minmax(0,1fr)"><div>
+<h2>常見錯誤</h2>
+<ul class="warn">
+<li><b>兩條邊箭頭畫反</b>：一條往前、一條往後，所有紅藍交叉點的正負號都會反過來，甚至得到 0。開始前一定要檢查。</li>
+<li><b>把紅紅、藍藍交叉也算進去</b>：Lk 只數紅藍交叉；Wr 則是看中心線，不看邊。</li>
+<li><b>翻面數成整圈</b>：一次翻面是半圈，記 ±1，Tw 要再除以 2。</li>
+<li><b>紙帶沒有平放</b>：有地方立起來或捲曲時，翻面和自跨都看不清楚。可以用透明壓克力板壓平。</li>
+<li><b>正負號判斷不一致</b>：固定用「上線轉到下線、逆時針為正」，全組統一。</li>
+</ul>
+<h2 style="margin-top:24px">給評審的數學背景</h2>
+<p>Lk 是兩條邊的高斯連結數（Gauss linking number），在不剪斷的連續變形下不變，可由 Reidemeister 移動證明。Lk ＝ Tw ＋ Wr 是 Călugăreanu（1959）、White（1969）、Fuller（1971）的定理，原本用積分定義 Tw 和 Wr，也用於 DNA 超螺旋的研究。本研究把紙帶限制在「平放」狀態，讓 Tw 和 Wr 都變成可以數的整數或半整數，因此國中生可以完整證明並用實驗驗證。</p>
+<p class="foot">本頁的圖由程式依照紙帶的幾何形狀繪製，卡片上的數字是程式在圖上實際找出交叉點、判斷上下與正負號後算出的。</p>
+</div></div>
+
+</div></section>
+
+<script>
+{
+const NS='http://www.w3.org/2000/svg';
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const RED='#e8402a',BLUE='#2a6fdb';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e};
+
+/* 幾何工具（數學座標，y 向上；畫圖時再翻轉） */
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],crs=(a,b)=>a[0]*b[1]-a[1]*b[0];
+function segX(p,p2,q,q2){const d1=sub(p2,p),d2=sub(q2,q),den=crs(d1,d2);if(Math.abs(den)<1e-12)return null;
+  const w=sub(q,p),u=crs(w,d2)/den,v=crs(w,d1)/den;return(u>=0&&u<1&&v>=0&&v<1)?{u,v,d1,d2}:null}
+/* 找出兩條折線（每段帶有繪圖順序 z）的交叉點與正負號 */
+function crossings(A,B,same){const out=[];
+  for(let i=0;i<A.p.length-1;i++)for(let j=0;j<B.p.length-1;j++){
+    if(same&&Math.abs(i-j)<3)continue;if(same&&j<i)continue;
+    const r=segX(A.p[i],A.p[i+1],B.p[j],B.p[j+1]);if(!r)continue;
+    const aOver=A.z[i]>B.z[j],o=aOver?r.d1:r.d2,u=aOver?r.d2:r.d1;
+    const x=A.p[i][0]+r.u*r.d1[0],y=A.p[i][1]+r.u*r.d1[1];if(out.some(c=>Math.hypot(c.x-x,c.y-y)<0.8))continue;
+    out.push({x,y,s:Math.sign(crs(o,u))})}
+  return out}
+
+/* 紙帶：中心線 c(t)、寬 w、翻面列表 [{t,h}]；h=+1/-1 為翻面手性 */
+function ribbon(c,{w=14,flips=[],N=600,closed=false,z0=0,k=0.012}={}){
+  const pts=[],nor=[];for(let i=0;i<=N;i++){const t=i/N;pts.push(c(t))}
+  for(let i=0;i<=N;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(N,i+1)];let d=sub(b,a);if(closed&&(i===0||i===N)){d=sub(pts[1],pts[N-1])}const l=Math.hypot(...d)||1;nor.push([-d[1]/l,d[0]/l])}
+  const f=t=>flips.reduce((m,fl)=>m*Math.tanh((t-fl.t)/k),1);
+  const red={p:[],z:[]},blue={p:[],z:[]},cen={p:[],z:[]},chunks=[];
+  for(let i=0;i<=N;i++){const t=i/N,v=f(t);
+    // 翻面處哪條邊在上：依翻面的轉向與手性決定
+    let near=null,dm=1;for(const fl of flips){const d=Math.abs(t-fl.t);if(d<dm){dm=d;near=fl}}
+    let redTop=true;if(near){const dir=Math.sign(f(near.t+3*k)-f(near.t-3*k));redTop=dir*near.h>0}
+    const zc=z0+i*10;
+    red.p.push([pts[i][0]+nor[i][0]*w*v,pts[i][1]+nor[i][1]*w*v]);red.z.push(zc+(redTop?3:2));
+    blue.p.push([pts[i][0]-nor[i][0]*w*v,pts[i][1]-nor[i][1]*w*v]);blue.z.push(zc+(redTop?2:3));
+    cen.p.push(pts[i]);cen.z.push(zc);chunks.push({v,redTop})}
+  return {red,blue,cen,chunks,N}}
+
+/* 依繪圖順序畫出紙帶：每一小段先畫紙面，再畫兩條邊 */
+function drawRibbons(svg,list,tf,{arrows=true,center=false}={}){
+  const items=[];
+  list.forEach(R=>{for(let i=0;i<R.N;i++)items.push({R,i,z:R.cen.z[i]})});
+  items.sort((a,b)=>a.z-b.z);
+  const P=p=>tf(p).join(',');
+  for(const {R,i} of items){const a=R.red.p,b=R.blue.p,ch=R.chunks[i];
+    el('polygon',{points:[a[i],a[i+1],b[i+1],b[i]].map(P).join(' '),fill:ch.v>=0?css('--front'):css('--back'),stroke:'none'},svg);
+    const lines=[[R.blue,BLUE],[R.red,RED]];if(!ch.redTop)lines.reverse();
+    for(const [E,col] of lines)el('line',{x1:tf(E.p[i])[0],y1:tf(E.p[i])[1],x2:tf(E.p[i+1])[0],y2:tf(E.p[i+1])[1],stroke:col,'stroke-width':2.6,'stroke-linecap':'round'},svg)}
+  if(center)list.forEach(R=>el('polyline',{points:R.cen.p.map(P).join(' '),fill:'none',stroke:css('--mute'),'stroke-width':1.2,'stroke-dasharray':'4 4'},svg));
+  if(arrows)list.forEach(R=>{for(const E of [[R.red,RED],[R.blue,BLUE]])for(const q of [0.13,0.38,0.63,0.88]){const i=Math.round(q*R.N),p=tf(E[0].p[i]),p2=tf(E[0].p[i+2]);arrow(svg,p,p2,E[1])}})}
+function arrow(svg,p,p2,col){const d=sub(p2,p),l=Math.hypot(...d)||1,u=[d[0]/l,d[1]/l],s=6;
+  el('polygon',{points:[[p[0]+u[0]*s,p[1]+u[1]*s],[p[0]-u[0]*s-u[1]*s*.7,p[1]-u[1]*s+u[0]*s*.7],[p[0]-u[0]*s+u[1]*s*.7,p[1]-u[1]*s-u[0]*s*.7]].map(q=>q.join(',')).join(' '),fill:col},svg)}
+function mark(svg,X,tf,show=true){for(const c of X){const [x,y]=tf([c.x,c.y]);
+  el('circle',{cx:x,cy:y,r:9,fill:'none',stroke:css('--ink'),'stroke-width':1.4},svg);
+  if(show){const t=el('text',{x:x+11,y:y-9,'font-size':13,'font-weight':700,fill:css('--ink')},svg);t.textContent=c.s>0?'+1':'−1'}}}
+const T=(ox,oy,sc=1)=>p=>[ox+p[0]*sc,oy-p[1]*sc];
+const sum=X=>X.reduce((s,c)=>s+c.s,0);
+const fmt=v=>(v>0?'+':v<0?'−':'')+Math.abs(v);
+function cards(id,list){document.getElementById(id).innerHTML=list.map(([k,v])=>`<div><b>${v}</b>${k}</div>`).join('')}
+function label(svg,x,y,txt,col,size=13,anchor='start'){const t=el('text',{x,y,'font-size':size,'font-weight':700,fill:col||css('--ink'),'text-anchor':anchor},svg);t.textContent=txt}
+
+/* 圖 1 */
+{const s=document.getElementById('f1');const R=ribbon(t=>[-150+300*t,0],{w:34,N:200});drawRibbons(s,[R],T(200,95),{center:true});
+ label(s,40,48,'紅邊',RED);label(s,40,158,'藍邊',BLUE);label(s,355,99,'中心線',css('--mute'),12,'end');label(s,200,22,'前進方向 →',css('--ink'),13,'middle')}
+
+/* 圖 2、3：兩條有方向的線 */
+function strand(svg,a,b,col,gap){const P=[a,b];
+  if(gap){const m=[(a[0]+b[0])/2,(a[1]+b[1])/2],d=sub(b,a),l=Math.hypot(...d),u=[d[0]/l,d[1]/l],g=12;
+    el('line',{x1:a[0],y1:a[1],x2:m[0]-u[0]*g,y2:m[1]-u[1]*g,stroke:col,'stroke-width':4,'stroke-linecap':'round'},svg);
+    el('line',{x1:m[0]+u[0]*g,y1:m[1]+u[1]*g,x2:b[0],y2:b[1],stroke:col,'stroke-width':4,'stroke-linecap':'round'},svg)}
+  else el('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:col,'stroke-width':4,'stroke-linecap':'round'},svg);
+  const d=sub(b,a),l=Math.hypot(...d);arrow(svg,[b[0]-d[0]/l*4,b[1]-d[1]/l*4],b,col)}
+{const s=document.getElementById('f2');strand(s,[120,170],[280,30],BLUE,true);strand(s,[120,30],[280,170],RED,false);
+ label(s,292,182,'藍：在下（斷開）',BLUE);label(s,292,26,'紅：在上',RED)}
+{const s=document.getElementById('f3');
+ // 左：上線 ↗（紅）、下線 ↖（藍）→ 逆時針 +1
+ strand(s,[150,170],[50,60],BLUE,true);strand(s,[50,170],[150,60],RED,false);
+ el('path',{d:'M 128 92 A 34 34 0 0 0 72 92',fill:'none',stroke:css('--ink'),'stroke-width':2,'marker-end':''},s);arrow(s,[78,90],[72,92],css('--ink'));
+ label(s,100,200,'逆時針 → +1',css('--ink'),15,'middle');
+ // 右：上線 ↖（紅）、下線 ↗（藍）→ 順時針 −1
+ strand(s,[250,170],[350,60],BLUE,true);strand(s,[350,170],[250,60],RED,false);
+ el('path',{d:'M 272 92 A 34 34 0 0 1 328 92',fill:'none',stroke:css('--ink'),'stroke-width':2},s);arrow(s,[322,90],[328,92],css('--ink'));
+ label(s,300,200,'順時針 → −1',css('--ink'),15,'middle')}
+
+/* 圖 4：拉開一對交叉 */
+{const s=document.getElementById('f4');
+ const red={p:[],z:[]},blue={p:[],z:[]},blue2={p:[],z:[]};
+ for(let i=0;i<=120;i++){const x=-170+340*i/120;red.p.push([x,0]);red.z.push(5);blue.p.push([x,-28+60*Math.exp(-(x*x)/3000)]);blue.z.push(1);blue2.p.push([x,-60]);blue2.z.push(1)}
+ const tf=T(200,70);
+ const X=crossings(red,blue);
+ const drawLine=(L,col,gapAt)=>{const pts=L.p.map(tf);el('polyline',{points:pts.map(q=>q.join(',')).join(' '),fill:'none',stroke:col,'stroke-width':3},s)};
+ // 上圖：藍線跨過紅線兩次（先在下、再在上）
+ for(let i=0;i<120;i++){const a=tf(blue.p[i]),b=tf(blue.p[i+1]);const under=blue.z[i]<5;const nearX=X.some(c=>Math.abs(c.x-blue.p[i][0])<9);
+   if(!nearX)el('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:BLUE,'stroke-width':3},s)}
+ for(let i=0;i<120;i++){const a=tf(red.p[i]),b=tf(red.p[i+1]);el('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:RED,'stroke-width':3},s)}
+ arrow(s,tf([164,0]),tf([170,0]),RED);arrow(s,tf([164,-28]),tf([170,-28]),BLUE);
+ mark(s,X,tf);label(s,370,30,'總和 '+fmt(sum(X)),css('--ink'),13,'end');
+ // 下圖：拉開後
+ const tf2=T(200,170);
+ el('line',{x1:30,y1:150,x2:370,y2:150,stroke:RED,'stroke-width':3},s);el('line',{x1:30,y1:200,x2:370,y2:200,stroke:BLUE,'stroke-width':3},s);
+ arrow(s,[364,150],[370,150],RED);arrow(s,[364,200],[370,200],BLUE);
+ label(s,370,225,'拉開後：沒有交叉，總和 0',css('--ink'),13,'end');label(s,200,124,'↓ 把藍線往下拉（藍線兩次都從紅線下面穿過）',css('--mute'),12,'middle')}
+
+/* 圖 5：一次翻面 */
+{const s=document.getElementById('f5');const R=ribbon(t=>[-160+320*t,0],{w:30,N:240,flips:[{t:0.5,h:1}],k:0.07});
+ drawRibbons(s,[R],T(200,95));const X=crossings(R.red,R.blue);mark(s,X,T(200,95));
+ label(s,60,40,'正面',css('--ink'),13,'middle');label(s,340,40,'反面',css('--ink'),13,'middle');
+ cards('c5',[['翻面次數',1],['紅藍交叉',X.length],['翻面總和',fmt(sum(X))]])}
+
+/* 圖 6：一次自跨 */
+{const s=document.getElementById('f6');
+ const A=ribbon(t=>[-170+340*t,-60+120*t],{w:16,N:200,z0:0});
+ const B=ribbon(t=>[-170+340*t,60-120*t],{w:16,N:200,z0:5000});
+ const tf=T(200,130);drawRibbons(s,[A,B],tf);
+ const all=[];for(const [P,Q] of [[A.red,B.red],[A.red,B.blue],[A.blue,B.red],[A.blue,B.blue]])all.push(...crossings(P,Q).map(c=>({...c,rb:(P===A.red)!==(Q===B.red)})));
+ const rb=all.filter(c=>c.rb);const cc=crossings(A.cen,B.cen);
+ for(const c of all){const [x,y]=tf([c.x,c.y]);el('circle',{cx:x,cy:y,r:7,fill:'none',stroke:c.rb?css('--ink'):css('--mute'),'stroke-width':c.rb?1.6:1,'stroke-dasharray':c.rb?'':'2 2'},s)}
+ for(const c of rb){const [x,y]=tf([c.x,c.y]);label(s,x+10,y+4,c.s>0?'+1':'−1',css('--ink'),12)}
+ label(s,200,250,'實線圈：紅藍交叉　虛線圈：紅紅、藍藍',css('--mute'),12,'middle');
+ cards('c6',[['邊的交叉點',all.length],['其中紅藍',rb.length],['紅藍總和',fmt(sum(rb))+'（自跨 '+fmt(sum(cc))+'）']])}
+
+/* 圖 7：定理示意 */
+{const s=document.getElementById('f7');const ink=css('--ink'),mute=css('--mute');
+ const box=(x,y,w,h,t1,t2,col)=>{el('rect',{x,y,width:w,height:h,rx:12,fill:css('--bg'),stroke:col,'stroke-width':2},s);label(s,x+w/2,y+28,t1,col,15,'middle');label(s,x+w/2,y+52,t2,mute,12,'middle')};
+ box(110,14,180,66,'紅藍交叉總和','= 2 × Lk',ink);
+ box(14,170,170,74,'翻面處','每處 1 個 → 總和 = 2Tw',RED);
+ box(216,170,170,74,'自跨處','每處 2 個 → 總和 = 2Wr',BLUE);
+ el('line',{x1:170,y1:80,x2:110,y2:168,stroke:mute,'stroke-width':2},s);el('line',{x1:230,y1:80,x2:290,y2:168,stroke:mute,'stroke-width':2},s);
+ label(s,200,284,'2Lk = 2Tw + 2Wr　⟹　Lk = Tw + Wr',ink,15,'middle')}
+
+/* 圖 8：同一個環的兩種擺法（n=1 剪開，|Lk|=2） */
+function layout(id,cid,c,flips,N=900){const s=document.getElementById(id);
+  const R=ribbon(c,{w:13,flips,N,closed:true,k:0.009});const tf=T(200,150);drawRibbons(s,[R],tf,{arrows:true});
+  const X=crossings(R.red,R.blue);const W=crossings(R.cen,R.cen,true);mark(s,X,tf,false);
+  const tw=flips.length,lk=sum(X)/2,wr=sum(W),fs=lk-wr;
+  cards(cid,[['翻面次數',tw],['自跨總和 Wr',fmt(wr)],['紅藍總和 ÷ 2 = Lk',fmt(lk)]]);
+  return {lk,wr}}
+const RA=layout('f8a','c8a',t=>[130*Math.cos(2*Math.PI*t),110*Math.sin(2*Math.PI*t)],[{t:.125,h:1},{t:.375,h:1},{t:.625,h:1},{t:.875,h:1}]);
+const RB=layout('f8b','c8b',t=>{const a=2*Math.PI*(t+0.6);return [160*Math.sin(a),105*Math.sin(a)*Math.cos(a)]},[{t:.25,h:1},{t:.75,h:1}]);
+
+/* 預測表 */
+{const rows=[];for(let n=0;n<=9;n++){
+  let r;if(n%2===0)r=[n,'2 個環，各長 L',n/2,n,'不打結（同左）',n/2];
+  else r=[n,'1 個環，長 2L'+(n>=3?'，打成 (2,'+n+') 環面結':''),2*n,n>=3?'打結，擺不成圓':4*n,n>=3?`Wr = ${n}，翻面 ${2*n} 次`:'不打結（同左）','—'];
+  rows.push(`<tr><td>${r[0]}</td><td class="l">${r[1]}</td><td><b>${r[2]}</b></td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`)}
+ document.getElementById('ptab').innerHTML=rows.join('')}
+}
+</script>
+</body>
+</html>

@@ -93,7 +93,7 @@ td button.knot{border-color:var(--red)}
 <section class="band"><div class="wrap">
 <h1>扭轉紙環剪開實驗室</h1>
 <p class="lead">紙條先扭 n 個半圈、再黏成環，接著畫上等分線把寬度分成 k 等分（k = 1 就是不剪），再沿線剪開。剪完後每個獨立的環會塗上不同顏色；拉動「拉開檢視」可以把環往外拉：沒套住的環能完全分開，套住的環會像鍊子一樣被拉到繃緊，解不開時就停下來。點下方的色塊，則能只看單一個環。</p>
-<nav class="nav scroll"><a href="#lab">實驗室</a><a href="#matrix">全覽表</a><a href="#laws">規律</a><a href="#prior">已有研究</a><a href="#next">可再研究方向</a></nav>
+<nav class="nav scroll"><a href="#lab">實驗室</a><a href="#matrix">全覽表</a><a href="#laws">規律</a><a href="#prior">已有研究</a><a href="#next">可再研究方向</a><a href="guide.html">方向一手冊：環繞數</a></nav>
 <div class="lab" id="lab">
   <div class="fig" id="fig"><span class="hint">拖曳旋轉・雙指縮放</span></div>
   <div class="panel">
@@ -386,7 +386,7 @@ const STRAT=[
   d:['新竹市 115 學年度國小組、台大通識學習單、台北科學日都做過。'],m:'—',
   x:'若真的要做，要加入方向一的環繞數分析，或改成三維排列，才會有新意。',r:'容易被評審認為重複前人作品。'}];
 $('strat').innerHTML=STRAT.map((s,i)=>`<details${i===0?' open':''}><summary>${s.t}<small>${s.lv}</small></summary><dl>
-<dt>研究問題</dt><dd>${s.q}</dd><dt>假設</dt><dd>${s.h}</dd><dt>做法</dt><dd><ol>${s.d.map(x=>`<li>${x}</li>`).join('')}</ol></dd>
+<dt>研究問題</dt><dd>${s.q}${i===0?' <a href="guide.html">→ 看完整的步驟定義與圖解</a>':''}</dd><dt>假設</dt><dd>${s.h}</dd><dt>做法</dt><dd><ol>${s.d.map(x=>`<li>${x}</li>`).join('')}</ol></dd>
 <dt>要量什麼</dt><dd>${s.m}</dd><dt>與前人區隔</dt><dd>${s.x}</dd><dt>風險與對策</dt><dd>${s.r}</dd></dl></details>`).join('');
 
 function loop(){if(SIM&&SIM.act&&st.ex>0&&st.p>=1){const t0=performance.now();do simStep();while(SIM.act&&performance.now()-t0<14);clear();simDraw()}ctr.update();ren.render(scene,cam);raf=requestAnimationFrame(loop)}
